@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TERAPZHE</title>
+    <!-- Co-Star inspired stark, modern typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #000000;
+            --text-color: #ffffff;
+            --muted-color: #666666;
+            --border-color: #333333;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            overflow-x: hidden;
+            letter-spacing: -0.03em;
+            line-height: 1.4;
+            min-height: 100vh;
+        }
+
+        /* Background Canvas - Floating Dots */
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Fixed Navigation Menu (Solely TERAPZHE Title) */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            padding: 2.5rem 4rem;
+            z-index: 100;
+            background: transparent;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.25em;
+            font-weight: 700;
+        }
+
+        /* Main Container */
+        main {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 12rem 4rem 4rem 4rem;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        /* Hero Section */
+        .hero {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1.5rem;
+        }
+
+        h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(3.5rem, 8vw, 7rem);
+            font-weight: 700;
+            line-height: 0.95;
+            text-transform: uppercase;
+            letter-spacing: -0.04em;
+        }
+
+        .tagline {
+            font-family: 'Space Mono', monospace;
+            font-size: clamp(0.9rem, 1.5vw, 1.2rem);
+            color: var(--muted-color);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        /* Minimal Footer */
+        footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--muted-color);
+            border-top: 1px solid var(--border-color);
+            padding-top: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            color: var(--text-color);
+        }
+
+        .pulse-dot {
+            width: 6px;
+            height: 6px;
+            background-color: var(--text-color);
+            border-radius: 50%;
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+            animation: pulse 2s infinite ease-in-out;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.2; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.1); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 900px) {
+            nav {
+                padding: 1.5rem 2rem;
+            }
+            main {
+                padding: 9rem 2rem 2rem 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Floating Particles Canvas -->
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- Fixed Transparent Navigation -->
+    <nav>
+        <div>Terapzhe</div>
+    </nav>
+
+    <!-- Main Section -->
+    <main>
+        <section class="hero">
+            <h1>Terapzhe</h1>
+            <p class="tagline">Work In Progress</p>
+        </section>
+
+        <footer>
+            <div class="status-indicator">
+                <div class="pulse-dot"></div>
+                <span>Coming Soon</span>
+            </div>
+            <div>&copy; <span id="year"></span> Terapzhe. All rights reserved.</div>
+        </footer>
+    </main>
+
+    <script>
+        // Set dynamic copyright year
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // Canvas Particle Background (Floating Dots)
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+
+        let width, height;
+        let particles = [];
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * 0.35;
+                this.vy = (Math.random() - 0.5) * 0.35;
+                this.radius = Math.random() * 1.5 + 0.5;
+                this.alpha = Math.random() * 0.5 + 0.15;
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+
+                if (this.x < 0) this.x = width;
+                if (this.x > width) this.x = 0;
+                if (this.y < 0) this.y = height;
+                if (this.y > height) this.y = 0;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 255, 255, ${this.alpha})`;
+                ctx.fill();
+            }
+        }
+
+        // Particle density based on viewport size
+        const particleCount = Math.min(Math.floor((window.innerWidth * window.innerHeight) / 12000), 100);
+        for (let i = 0; i < particleCount; i++) {
+            particles.push(new Particle());
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    </script>
+</body>
+</html>
